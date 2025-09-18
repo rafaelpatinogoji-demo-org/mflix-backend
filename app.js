@@ -11,6 +11,7 @@ const embeddedMovieRoutes = require('./src/routes/embeddedMovieRoutes');
 const v_app = express();
 const c_PORT = process.env.PORT || 3000;
 
+// Alooo
 connectDB();
 
 v_app.use(cors());
