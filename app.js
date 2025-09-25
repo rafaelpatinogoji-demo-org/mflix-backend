@@ -48,8 +48,10 @@ v_app.use((p_err, p_req, p_res, p_next) => {
   p_res.status(500).json({ message: 'Internal server error' });
 });
 
-v_app.listen(c_PORT, () => {
-  console.log(`Server running on port ${c_PORT}`);
-});
+if (require.main === module) {
+  v_app.listen(c_PORT, () => {
+    console.log(`Server running on port ${c_PORT}`);
+  });
+}
 
 module.exports = v_app;
