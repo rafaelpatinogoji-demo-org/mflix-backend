@@ -1,16 +1,13 @@
 const Notification = require('../models/Notification');
+const { f_authenticateUser, f_validateUserAccess } = require('../middleware/authMiddleware');
 
 const f_getAllNotifications = async (p_req, p_res) => {
   try {
     const v_page = parseInt(p_req.query.page) || 1;
-    const v_limit = parseInt(p_req.query.limit) || 10;
+    const v_limit = Math.min(parseInt(p_req.query.limit) || 10, 50);
     const v_skip = (v_page - 1) * v_limit;
-    const v_userId = p_req.query.user_id;
+    const v_userId = p_req.user.id;
     const v_readStatus = p_req.query.read;
-
-    if (!v_userId) {
-      return p_res.status(400).json({ message: 'user_id query parameter is required' });
-    }
 
     const v_filter = { user_id: v_userId };
     if (v_readStatus !== undefined) {
@@ -98,10 +95,7 @@ const f_deleteNotification = async (p_req, p_res) => {
 
 const f_getUnreadCount = async (p_req, p_res) => {
   try {
-    const v_userId = p_req.query.user_id;
-    if (!v_userId) {
-      return p_res.status(400).json({ message: 'user_id query parameter is required' });
-    }
+    const v_userId = p_req.user.id;
 
     const v_count = await Notification.countDocuments({ 
       user_id: v_userId, 

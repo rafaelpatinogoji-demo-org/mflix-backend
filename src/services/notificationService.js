@@ -143,6 +143,14 @@ class NotificationService {
 
   async createBulkNotifications(notifications) {
     try {
+      if (!Array.isArray(notifications) || notifications.length === 0) {
+        throw new Error('Notifications must be a non-empty array');
+      }
+      
+      if (notifications.length > 100) {
+        throw new Error('Cannot create more than 100 notifications at once');
+      }
+      
       const v_savedNotifications = await Notification.insertMany(notifications);
       
       for (const notification of v_savedNotifications) {

@@ -9,16 +9,23 @@ class PushNotificationService {
 
   initializeFirebase() {
     try {
-      if (process.env.FIREBASE_SERVICE_ACCOUNT) {
-        const v_serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
-        admin.initializeApp({
-          credential: admin.credential.cert(v_serviceAccount)
-        });
-        this.initialized = true;
-        console.log('Firebase Admin SDK initialized');
-      } else {
+      const v_serviceAccountJson = process.env.FIREBASE_SERVICE_ACCOUNT;
+      if (!v_serviceAccountJson) {
         console.log('Push notification service not configured - missing FIREBASE_SERVICE_ACCOUNT');
+        return;
       }
+      
+      const v_serviceAccount = JSON.parse(v_serviceAccountJson);
+      
+      if (!v_serviceAccount.project_id || !v_serviceAccount.private_key || !v_serviceAccount.client_email) {
+        throw new Error('Invalid Firebase service account structure');
+      }
+      
+      admin.initializeApp({
+        credential: admin.credential.cert(v_serviceAccount)
+      });
+      this.initialized = true;
+      console.log('Firebase Admin SDK initialized');
     } catch (error) {
       console.error('Firebase initialization failed:', error);
       this.initialized = false;
@@ -63,7 +70,8 @@ class PushNotificationService {
         v_response.responses.forEach((resp, idx) => {
           if (!resp.success) {
             v_failedTokens.push(v_tokens[idx]);
-            console.error(`Push notification failed for token ${v_tokens[idx]}:`, resp.error);
+            const v_maskedToken = v_tokens[idx].substring(0, 8) + '...' + v_tokens[idx].substring(v_tokens[idx].length - 8);
+            console.error(`Push notification failed for token ${v_maskedToken}:`, resp.error);
           }
         });
         

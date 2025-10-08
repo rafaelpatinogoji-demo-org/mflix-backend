@@ -10,8 +10,9 @@ class SocketService {
   initialize(server) {
     this.io = socketIo(server, {
       cors: {
-        origin: "*",
-        methods: ["GET", "POST"]
+        origin: process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000', 'http://localhost:3001'],
+        methods: ["GET", "POST"],
+        credentials: true
       }
     });
 

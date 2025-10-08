@@ -1,16 +1,14 @@
 const DeviceToken = require('../models/DeviceToken');
+const { f_authenticateUser, f_validateUserAccess } = require('../middleware/authMiddleware');
 
 const f_getAllDeviceTokens = async (p_req, p_res) => {
   try {
-    const v_userId = p_req.query.user_id;
-    if (!v_userId) {
-      return p_res.status(400).json({ message: 'user_id query parameter is required' });
-    }
+    const v_userId = p_req.user.id;
 
     const v_tokens = await DeviceToken.find({ 
       user_id: v_userId,
       active: true 
-    });
+    }).select('platform last_used active created_at -token');
 
     p_res.json({ deviceTokens: v_tokens });
   } catch (p_error) {

@@ -45,9 +45,17 @@ class EmailService {
       const v_subjectTemplate = handlebars.compile(v_template.subject_template);
       const v_bodyTemplate = handlebars.compile(v_template.body_template);
 
+      const v_safeNotificationData = notification.toObject ? notification.toObject() : notification;
+      
       const v_templateContext = { 
-        ...templateData, 
-        ...notification.toObject ? notification.toObject() : notification 
+        ...templateData,
+        title: handlebars.escapeExpression(v_safeNotificationData.title || ''),
+        message: handlebars.escapeExpression(v_safeNotificationData.message || ''),
+        type: handlebars.escapeExpression(v_safeNotificationData.type || ''),
+        priority: handlebars.escapeExpression(v_safeNotificationData.priority || ''),
+        user_id: v_safeNotificationData.user_id,
+        created_at: v_safeNotificationData.created_at,
+        _id: v_safeNotificationData._id
       };
 
       const v_subject = v_subjectTemplate(v_templateContext);
