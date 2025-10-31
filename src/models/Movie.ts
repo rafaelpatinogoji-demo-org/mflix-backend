@@ -1,6 +1,21 @@
-const mongoose = require('mongoose');
+import mongoose, { Schema, Document } from 'mongoose';
 
-const c_imdbSchema = new mongoose.Schema({
+interface IImdb {
+  rating?: number;
+  votes?: number;
+  id?: number;
+}
+
+interface IMovie extends Document {
+  plot?: string;
+  genres: string[];
+  runtime?: number;
+  title: string;
+  year?: number;
+  imdb?: IImdb;
+}
+
+const c_imdbSchema = new Schema<IImdb>({
   rating: {
     type: Number,
     required: false
@@ -15,7 +30,7 @@ const c_imdbSchema = new mongoose.Schema({
   }
 }, { _id: false });
 
-const c_movieSchema = new mongoose.Schema({
+const c_movieSchema = new Schema<IMovie>({
   plot: {
     type: String,
     required: false
@@ -40,4 +55,4 @@ const c_movieSchema = new mongoose.Schema({
   collection: 'movies'
 });
 
-module.exports = mongoose.model('Movie', c_movieSchema);
+export default mongoose.model<IMovie>('Movie', c_movieSchema);

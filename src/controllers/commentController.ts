@@ -1,9 +1,10 @@
-const Comment = require('../models/Comment');
+import { Request, Response } from 'express';
+import Comment from '../models/Comment';
 
-const f_getAllComments = async (p_req, p_res) => {
+export const f_getAllComments = async (p_req: Request, p_res: Response): Promise<void> => {
   try {
-    const v_page = parseInt(p_req.query.page) || 1;
-    const v_limit = parseInt(p_req.query.limit) || 10;
+    const v_page = parseInt(p_req.query.page as string) || 1;
+    const v_limit = parseInt(p_req.query.limit as string) || 10;
     const v_skip = (v_page - 1) * v_limit;
 
     const v_comments = await Comment.find()
@@ -21,24 +22,25 @@ const f_getAllComments = async (p_req, p_res) => {
       totalComments: v_total
     });
   } catch (p_error) {
-    p_res.status(500).json({ message: p_error.message });
+    p_res.status(500).json({ message: (p_error as Error).message });
   }
 };
 
-const f_getCommentById = async (p_req, p_res) => {
+export const f_getCommentById = async (p_req: Request, p_res: Response): Promise<void> => {
   try {
     const v_comment = await Comment.findById(p_req.params.id)
       .populate('movie_id', 'title year');
     if (!v_comment) {
-      return p_res.status(404).json({ message: 'Comment not found' });
+      p_res.status(404).json({ message: 'Comment not found' });
+      return;
     }
     p_res.json(v_comment);
   } catch (p_error) {
-    p_res.status(500).json({ message: p_error.message });
+    p_res.status(500).json({ message: (p_error as Error).message });
   }
 };
 
-const f_createComment = async (p_req, p_res) => {
+export const f_createComment = async (p_req: Request, p_res: Response): Promise<void> => {
   try {
     const v_comment = new Comment(p_req.body);
     const v_savedComment = await v_comment.save();
@@ -46,11 +48,11 @@ const f_createComment = async (p_req, p_res) => {
       .populate('movie_id', 'title year');
     p_res.status(201).json(v_populatedComment);
   } catch (p_error) {
-    p_res.status(400).json({ message: p_error.message });
+    p_res.status(400).json({ message: (p_error as Error).message });
   }
 };
 
-const f_updateComment = async (p_req, p_res) => {
+export const f_updateComment = async (p_req: Request, p_res: Response): Promise<void> => {
   try {
     const v_comment = await Comment.findByIdAndUpdate(
       p_req.params.id,
@@ -59,42 +61,35 @@ const f_updateComment = async (p_req, p_res) => {
     ).populate('movie_id', 'title year');
     
     if (!v_comment) {
-      return p_res.status(404).json({ message: 'Comment not found' });
+      p_res.status(404).json({ message: 'Comment not found' });
+      return;
     }
     p_res.json(v_comment);
   } catch (p_error) {
-    p_res.status(400).json({ message: p_error.message });
+    p_res.status(400).json({ message: (p_error as Error).message });
   }
 };
 
-const f_deleteComment = async (p_req, p_res) => {
+export const f_deleteComment = async (p_req: Request, p_res: Response): Promise<void> => {
   try {
     const v_comment = await Comment.findByIdAndDelete(p_req.params.id);
     if (!v_comment) {
-      return p_res.status(404).json({ message: 'Comment not found' });
+      p_res.status(404).json({ message: 'Comment not found' });
+      return;
     }
     p_res.json({ message: 'Comment deleted successfully' });
   } catch (p_error) {
-    p_res.status(500).json({ message: p_error.message });
+    p_res.status(500).json({ message: (p_error as Error).message });
   }
 };
 
-const f_getCommentsByMovie = async (p_req, p_res) => {
+export const f_getCommentsByMovie = async (p_req: Request, p_res: Response): Promise<void> => {
   try {
     const v_comments = await Comment.find({ movie_id: p_req.params.movieId })
       .populate('movie_id', 'title year')
       .sort({ date: -1 });
     p_res.json(v_comments);
   } catch (p_error) {
-    p_res.status(500).json({ message: p_error.message });
+    p_res.status(500).json({ message: (p_error as Error).message });
   }
-};
-
-module.exports = {
-  f_getAllComments,
-  f_getCommentById,
-  f_createComment,
-  f_updateComment,
-  f_deleteComment,
-  f_getCommentsByMovie
 };

@@ -4,19 +4,32 @@
   "description": "Express API with Mongoose for MongoDB sample_mflix cluster",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js",
-    "dev": "nodemon app.js"
+    "dev": "nodemon --exec ts-node app.ts",
+    "build": "tsc",
+    "start": "node dist/app.js"
   },
   "dependencies": {
-    "express": "^4.18.2",
-    "mongoose": "^7.5.0",
+    "cors": "^2.8.5",
     "dotenv": "^16.3.1",
-    "cors": "^2.8.5"
+    "express": "^4.18.2",
+    "mongoose": "^7.5.0"
   },
   "devDependencies": {
-    "nodemon": "^3.0.1"
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.5",
+    "@types/mongoose": "^5.11.96",
+    "@types/node": "^24.9.2",
+    "nodemon": "^3.1.10",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
   },
-  "keywords": ["express", "mongodb", "mongoose", "mflix", "api"],
+  "keywords": [
+    "express",
+    "mongodb",
+    "mongoose",
+    "mflix",
+    "api"
+  ],
   "author": "Rafael Patiño",
   "license": "MIT"
 }
