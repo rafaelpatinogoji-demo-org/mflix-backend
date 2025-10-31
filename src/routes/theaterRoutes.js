@@ -4,12 +4,14 @@ const {
   f_getTheaterById,
   f_createTheater,
   f_updateTheater,
-  f_deleteTheater
+  f_deleteTheater,
+  f_getNearbyTheaters
 } = require('../controllers/theaterController');
 
 const v_router = express.Router();
 
 v_router.get('/', f_getAllTheaters);
+v_router.get('/nearby', f_getNearbyTheaters);
 v_router.get('/:id', f_getTheaterById);
 v_router.post('/', f_createTheater);
 v_router.put('/:id', f_updateTheater);

@@ -3,7 +3,8 @@ require('dotenv').config();
 
 const connectDB = async () => {
   try {
-    await mongoose.connect(process.env.MONGODB_URI);
+    const v_mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/mflix';
+    await mongoose.connect(v_mongoURI);
     console.log('MongoDB connected successfully');
   } catch (error) {
     console.error('MongoDB connection error:', error);

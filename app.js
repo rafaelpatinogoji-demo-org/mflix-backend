@@ -6,12 +6,15 @@ const commentRoutes = require('./src/routes/commentRoutes');
 const userRoutes = require('./src/routes/userRoutes');
 const theaterRoutes = require('./src/routes/theaterRoutes');
 const sessionRoutes = require('./src/routes/sessionRoutes');
+const theaterSessionRoutes = require('./src/routes/theaterSessionRoutes');
 const embeddedMovieRoutes = require('./src/routes/embeddedMovieRoutes');
+const bookingRoutes = require('./src/routes/bookingRoutes');
+const movieSessionRoutes = require('./src/routes/movieSessionRoutes');
 
 const v_app = express();
 const c_PORT = process.env.PORT || 3000;
 
-// Alooo
+// Alo
 connectDB();
 
 v_app.use(cors());
@@ -23,7 +26,10 @@ v_app.use('/api/comments', commentRoutes);
 v_app.use('/api/users', userRoutes);
 v_app.use('/api/theaters', theaterRoutes);
 v_app.use('/api/sessions', sessionRoutes);
+v_app.use('/api/theater-sessions', theaterSessionRoutes);
 v_app.use('/api/embedded-movies', embeddedMovieRoutes);
+v_app.use('/api/bookings', bookingRoutes);
+v_app.use('/api/movie-sessions', movieSessionRoutes);
 
 v_app.get('/', (p_req, p_res) => {
   p_res.json({
@@ -35,7 +41,10 @@ v_app.get('/', (p_req, p_res) => {
       users: '/api/users',
       theaters: '/api/theaters',
       sessions: '/api/sessions',
-      embeddedMovies: '/api/embedded-movies'
+      theaterSessions: '/api/theater-sessions',
+      embeddedMovies: '/api/embedded-movies',
+      bookings: '/api/bookings',
+      movieSessions: '/api/movie-sessions'
     }
   });
 });

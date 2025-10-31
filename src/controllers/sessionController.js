@@ -73,10 +73,99 @@ const f_deleteSession = async (p_req, p_res) => {
   }
 };
 
+const f_getActiveUserSessions = async (p_req, p_res) => {
+  try {
+    const { userId, startDate, endDate } = p_req.query;
+    
+    // Build query filter for active sessions
+    const v_filter = { status: 'active' };
+    
+    // Add user filter if provided
+    if (userId) {
+      v_filter.user_id = userId;
+    }
+    
+    // Add date range filter if provided
+    if (startDate || endDate) {
+      v_filter.createdAt = {};
+      
+      if (startDate) {
+        const v_startDate = new Date(startDate);
+        if (isNaN(v_startDate.getTime())) {
+          return p_res.status(400).json({ 
+            message: 'Invalid start date format' 
+          });
+        }
+        v_filter.createdAt.$gte = v_startDate;
+      }
+      
+      if (endDate) {
+        const v_endDate = new Date(endDate);
+        if (isNaN(v_endDate.getTime())) {
+          return p_res.status(400).json({ 
+            message: 'Invalid end date format' 
+          });
+        }
+        v_filter.createdAt.$lte = v_endDate;
+      }
+    }
+    
+    // Find active sessions
+    const v_sessions = await Session.find(v_filter)
+      .sort({ createdAt: -1 });
+    
+    // Filter out expired sessions
+    const v_currentTime = new Date();
+    const v_activeSessions = v_sessions.filter(session => 
+      new Date(session.expiry) > v_currentTime
+    );
+    
+    p_res.json({
+      sessions: v_activeSessions,
+      count: v_activeSessions.length
+    });
+  } catch (p_error) {
+    console.error('Error retrieving active user sessions:', p_error);
+    p_res.status(500).json({ message: p_error.message });
+  }
+};
+
+const f_logoutAllSessions = async (p_req, p_res) => {
+  try {
+    const { userId } = p_req.body;
+    
+    // Validate required parameters
+    if (!userId) {
+      return p_res.status(400).json({ 
+        message: 'User ID is required' 
+      });
+    }
+    
+    // Update all active sessions for the user to inactive
+    const v_result = await Session.updateMany(
+      { user_id: userId, status: 'active' },
+      { status: 'inactive' }
+    );
+    
+    // Log action for security audit
+    console.log(`User ${userId} logged out all sessions at ${new Date().toISOString()}`);
+    
+    p_res.json({
+      message: 'All sessions terminated successfully',
+      sessionsTerminated: v_result.modifiedCount
+    });
+  } catch (p_error) {
+    console.error('Error logging out all sessions:', p_error);
+    p_res.status(500).json({ message: p_error.message });
+  }
+};
+
 module.exports = {
   f_getAllSessions,
   f_getSessionById,
   f_createSession,
   f_updateSession,
-  f_deleteSession
+  f_deleteSession,
+  f_getActiveUserSessions,
+  f_logoutAllSessions
 };

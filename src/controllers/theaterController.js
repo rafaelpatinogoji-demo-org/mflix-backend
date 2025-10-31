@@ -1,5 +1,90 @@
 const Theater = require('../models/Theater');
 
+const f_getNearbyTheaters = async (p_req, p_res) => {
+  try {
+    const { latitude, longitude, radius, unit = 'km' } = p_req.query;
+    
+    // Validate required parameters
+    if (!latitude || !longitude || !radius) {
+      return p_res.status(400).json({ 
+        message: 'Latitude, longitude, and radius are required parameters' 
+      });
+    }
+    
+    // Convert to numbers
+    const lat = parseFloat(latitude);
+    const lng = parseFloat(longitude);
+    const rad = parseFloat(radius);
+    
+    // Validate coordinates
+    if (isNaN(lat) || isNaN(lng) || isNaN(rad)) {
+      return p_res.status(400).json({ 
+        message: 'Latitude, longitude, and radius must be valid numbers' 
+      });
+    }
+    
+    // Validate coordinate ranges
+    if (lat < -90 || lat > 90 || lng < -180 || lng > 180) {
+      return p_res.status(400).json({ 
+        message: 'Invalid latitude or longitude values' 
+      });
+    }
+    
+    // Validate radius
+    if (rad <= 0) {
+      return p_res.status(400).json({ 
+        message: 'Radius must be a positive number' 
+      });
+    }
+    
+    // Convert radius to meters for MongoDB (if needed)
+    const radiusInMeters = unit === 'miles' ? rad * 1609.34 : rad * 1000;
+    
+    // Find nearby theaters using geospatial query
+    const v_theaters = await Theater.aggregate([
+      {
+        $geoNear: {
+          near: {
+            type: 'Point',
+            coordinates: [lng, lat]
+          },
+          distanceField: 'distance',
+          maxDistance: radiusInMeters,
+          spherical: true
+        }
+      },
+      {
+        $project: {
+          theaterId: 1,
+          location: 1,
+          distance: 1
+        }
+      }
+    ]);
+    
+    // Convert distance to appropriate unit for response
+    const theatersWithDistance = v_theaters.map(theater => {
+      const distance = unit === 'miles' ? 
+        theater.distance / 1609.34 : 
+        theater.distance / 1000;
+      
+      return {
+        ...theater,
+        distance: parseFloat(distance.toFixed(2)),
+        unit
+      };
+    });
+    
+    p_res.json({
+      theaters: theatersWithDistance,
+      count: theatersWithDistance.length
+    });
+  } catch (p_error) {
+    console.error('Error finding nearby theaters:', p_error);
+    p_res.status(500).json({ message: p_error.message });
+  }
+};
+
 const f_getAllTheaters = async (p_req, p_res) => {
   try {
     const v_page = parseInt(p_req.query.page) || 1;
@@ -78,5 +163,6 @@ module.exports = {
   f_getTheaterById,
   f_createTheater,
   f_updateTheater,
-  f_deleteTheater
+  f_deleteTheater,
+  f_getNearbyTheaters
 };

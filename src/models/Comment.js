@@ -21,6 +21,22 @@ const c_commentSchema = new mongoose.Schema({
   date: {
     type: Date,
     default: Date.now
+  },
+  rating: {
+    type: Number,
+    min: 1,
+    max: 10,
+    required: false
+  },
+  helpful_votes: {
+    type: Number,
+    default: 0,
+    required: false
+  },
+  not_helpful_votes: {
+    type: Number,
+    default: 0,
+    required: false
   }
 }, {
   collection: 'comments'

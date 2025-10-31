@@ -20,7 +20,8 @@ const c_theaterSchema = new mongoose.Schema({
       },
       coordinates: {
         type: [Number],
-        required: true
+        required: true,
+        index: '2dsphere'
       }
     }
   }
