@@ -149,9 +149,6 @@ Desktop.ini
 !.vscode/extensions.json
 !.vscode/*.code-snippets
 
-# Windsurf
-.windsurf/
-
 # Local History for Visual Studio Code
 .history/
 

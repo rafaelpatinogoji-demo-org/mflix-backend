@@ -1,4 +1,5 @@
 const EmbeddedMovie = require('../models/EmbeddedMovie');
+const vectorSearchService = require('../services/vectorSearchService');
 
 const f_getAllEmbeddedMovies = async (p_req, p_res) => {
   try {
