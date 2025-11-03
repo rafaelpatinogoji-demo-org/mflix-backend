@@ -1,5 +1,6 @@
 const Theater = require('../models/Theater');
 
+// Función para obtener teatros cercanos basado en coordenadas geográficas y radio de búsqueda
 const f_getNearbyTheaters = async (p_req, p_res) => {
   try {
     const { latitude, longitude, radius, unit = 'km' } = p_req.query;
@@ -85,6 +86,7 @@ const f_getNearbyTheaters = async (p_req, p_res) => {
   }
 };
 
+// Función para obtener todos los teatros con paginación
 const f_getAllTheaters = async (p_req, p_res) => {
   try {
     const v_page = parseInt(p_req.query.page) || 1;
@@ -108,6 +110,7 @@ const f_getAllTheaters = async (p_req, p_res) => {
   }
 };
 
+// Función para obtener un teatro específico por su ID
 const f_getTheaterById = async (p_req, p_res) => {
   try {
     const v_theater = await Theater.findById(p_req.params.id);
@@ -120,6 +123,7 @@ const f_getTheaterById = async (p_req, p_res) => {
   }
 };
 
+// Función para crear un nuevo teatro
 const f_createTheater = async (p_req, p_res) => {
   try {
     const v_theater = new Theater(p_req.body);
@@ -130,6 +134,7 @@ const f_createTheater = async (p_req, p_res) => {
   }
 };
 
+// Función para actualizar un teatro existente por su ID
 const f_updateTheater = async (p_req, p_res) => {
   try {
     const v_theater = await Theater.findByIdAndUpdate(
@@ -146,6 +151,7 @@ const f_updateTheater = async (p_req, p_res) => {
   }
 };
 
+// Función para eliminar un teatro por su ID
 const f_deleteTheater = async (p_req, p_res) => {
   try {
     const v_theater = await Theater.findByIdAndDelete(p_req.params.id);

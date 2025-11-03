@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const Movie = require('../models/Movie');
 const Comment = require('../models/Comment');
 
+// Obtiene todas las películas con paginación
 const f_getAllMovies = async (p_req, p_res) => {
   try {
     const v_page = parseInt(p_req.query.page) || 1;
@@ -25,6 +26,7 @@ const f_getAllMovies = async (p_req, p_res) => {
   }
 };
 
+// Obtiene una película específica por su ID
 const f_getMovieById = async (p_req, p_res) => {
   try {
     const v_movie = await Movie.findById(p_req.params.id);
@@ -37,6 +39,7 @@ const f_getMovieById = async (p_req, p_res) => {
   }
 };
 
+// Crea una nueva película en la base de datos
 const f_createMovie = async (p_req, p_res) => {
   try {
     const v_movie = new Movie(p_req.body);
@@ -47,6 +50,7 @@ const f_createMovie = async (p_req, p_res) => {
   }
 };
 
+// Actualiza los datos de una película existente
 const f_updateMovie = async (p_req, p_res) => {
   try {
     const v_movie = await Movie.findByIdAndUpdate(
@@ -63,6 +67,7 @@ const f_updateMovie = async (p_req, p_res) => {
   }
 };
 
+// Elimina una película de la base de datos
 const f_deleteMovie = async (p_req, p_res) => {
   try {
     const v_movie = await Movie.findByIdAndDelete(p_req.params.id);
@@ -75,6 +80,7 @@ const f_deleteMovie = async (p_req, p_res) => {
   }
 };
 
+// Busca películas por título, género o año
 const f_searchMovies = async (p_req, p_res) => {
   try {
     const { title, genre, year } = p_req.query;
@@ -98,6 +104,7 @@ const f_searchMovies = async (p_req, p_res) => {
 };
 
 // Get top-rated movies
+// Obtiene las películas mejor calificadas con paginación
 const f_getTopRatedMovies = async (p_req, p_res) => {
   try {
     const v_page = parseInt(p_req.query.page) || 1;
@@ -134,6 +141,7 @@ const f_getTopRatedMovies = async (p_req, p_res) => {
 };
 
 // Get movies grouped by genre with count and average rating
+// Obtiene películas agrupadas por género con conteo y calificación promedio
 const f_getMoviesByGenre = async (p_req, p_res) => {
   try {
     const v_genre = p_req.query.genre;
@@ -180,6 +188,7 @@ const f_getMoviesByGenre = async (p_req, p_res) => {
 };
 
 // Get movies grouped by year with count and average rating
+// Obtiene películas agrupadas por año con conteo y calificación promedio
 const f_getMoviesByYear = async (p_req, p_res) => {
   try {
     const v_startYear = parseInt(p_req.query.startYear);
@@ -232,6 +241,7 @@ const f_getMoviesByYear = async (p_req, p_res) => {
 };
 
 // Get trending movies based on comment frequency
+// Obtiene películas en tendencia basadas en la frecuencia de comentarios
 const f_getTrendingMovies = async (p_req, p_res) => {
   try {
     const v_days = parseInt(p_req.query.days) || 30;
@@ -279,6 +289,7 @@ const f_getTrendingMovies = async (p_req, p_res) => {
 };
 
 // Get engagement stats for a single movie
+// Obtiene estadísticas de engagement para una película específica
 const f_getMovieEngagementStats = async (p_req, p_res) => {
   try {
     const v_movieId = p_req.params.id;

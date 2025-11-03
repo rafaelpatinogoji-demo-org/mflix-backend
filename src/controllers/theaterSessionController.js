@@ -2,6 +2,7 @@ const TheaterSession = require('../models/TheaterSession');
 const Theater = require('../models/Theater');
 const Movie = require('../models/Movie');
 
+// Función para obtener las sesiones de teatro filtradas por teatro, fecha y película
 const f_getTheaterSessions = async (p_req, p_res) => {
   try {
     const { theaterId, date, movieId } = p_req.query;
@@ -64,6 +65,7 @@ const f_getTheaterSessions = async (p_req, p_res) => {
   }
 };
 
+// Función para crear una nueva sesión de teatro con validaciones de referencias y datos
 const f_createTheaterSession = async (p_req, p_res) => {
   try {
     const { theater, movie, showtime, endTime, price, totalSeats } = p_req.body;
@@ -133,6 +135,7 @@ const f_createTheaterSession = async (p_req, p_res) => {
   }
 };
 
+// Función para actualizar una sesión de teatro existente por ID
 const f_updateTheaterSession = async (p_req, p_res) => {
   try {
     const { id } = p_req.params;
@@ -184,6 +187,7 @@ const f_updateTheaterSession = async (p_req, p_res) => {
   }
 };
 
+// Función para eliminar una sesión de teatro por ID
 const f_deleteTheaterSession = async (p_req, p_res) => {
   try {
     const { id } = p_req.params;

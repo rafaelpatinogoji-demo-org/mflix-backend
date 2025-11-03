@@ -1,5 +1,6 @@
 const User = require('../models/User');
 
+// Obtiene todos los usuarios con paginación
 const f_getAllUsers = async (p_req, p_res) => {
   try {
     const v_page = parseInt(p_req.query.page) || 1;
@@ -23,6 +24,7 @@ const f_getAllUsers = async (p_req, p_res) => {
   }
 };
 
+// Obtiene un usuario específico por su ID
 const f_getUserById = async (p_req, p_res) => {
   try {
     const v_user = await User.findById(p_req.params.id);
@@ -35,6 +37,7 @@ const f_getUserById = async (p_req, p_res) => {
   }
 };
 
+// Crea un nuevo usuario
 const f_createUser = async (p_req, p_res) => {
   try {
     const v_user = new User(p_req.body);
@@ -45,6 +48,7 @@ const f_createUser = async (p_req, p_res) => {
   }
 };
 
+// Actualiza un usuario existente por su ID
 const f_updateUser = async (p_req, p_res) => {
   try {
     const v_user = await User.findByIdAndUpdate(
@@ -61,6 +65,7 @@ const f_updateUser = async (p_req, p_res) => {
   }
 };
 
+// Elimina un usuario por su ID
 const f_deleteUser = async (p_req, p_res) => {
   try {
     const v_user = await User.findByIdAndDelete(p_req.params.id);

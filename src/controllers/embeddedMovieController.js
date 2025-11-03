@@ -1,6 +1,7 @@
 const EmbeddedMovie = require('../models/EmbeddedMovie');
 const vectorSearchService = require('../services/vectorSearchService');
 
+// Obtiene todas las películas embebidas con paginación
 const f_getAllEmbeddedMovies = async (p_req, p_res) => {
   try {
     const v_page = parseInt(p_req.query.page) || 1;
@@ -24,6 +25,7 @@ const f_getAllEmbeddedMovies = async (p_req, p_res) => {
   }
 };
 
+// Obtiene una película embebida específica por su ID
 const f_getEmbeddedMovieById = async (p_req, p_res) => {
   try {
     const v_embeddedMovie = await EmbeddedMovie.findById(p_req.params.id);
@@ -36,6 +38,7 @@ const f_getEmbeddedMovieById = async (p_req, p_res) => {
   }
 };
 
+// Crea una nueva película embebida
 const f_createEmbeddedMovie = async (p_req, p_res) => {
   try {
     const v_embeddedMovie = new EmbeddedMovie(p_req.body);
@@ -46,6 +49,7 @@ const f_createEmbeddedMovie = async (p_req, p_res) => {
   }
 };
 
+// Actualiza una película embebida existente por su ID
 const f_updateEmbeddedMovie = async (p_req, p_res) => {
   try {
     const v_embeddedMovie = await EmbeddedMovie.findByIdAndUpdate(
@@ -62,6 +66,7 @@ const f_updateEmbeddedMovie = async (p_req, p_res) => {
   }
 };
 
+// Elimina una película embebida por su ID
 const f_deleteEmbeddedMovie = async (p_req, p_res) => {
   try {
     const v_embeddedMovie = await EmbeddedMovie.findByIdAndDelete(p_req.params.id);
@@ -74,6 +79,7 @@ const f_deleteEmbeddedMovie = async (p_req, p_res) => {
   }
 };
 
+// Busca películas embebidas por título, género o año
 const f_searchEmbeddedMovies = async (p_req, p_res) => {
   try {
     const { title, genre, year } = p_req.query;
@@ -96,11 +102,60 @@ const f_searchEmbeddedMovies = async (p_req, p_res) => {
   }
 };
 
+// Vector search usando Voyage AI
+const f_vectorSearch = async (p_req, p_res) => {
+  try {
+    const { query, limit = 10, model = 'voyage-3-large' } = p_req.query;
+    
+    if (!query) {
+      return p_res.status(400).json({ message: 'Query parameter is required' });
+    }
+
+    const v_results = await vectorSearchService.vectorSearch(query, parseInt(limit), model);
+    p_res.json({
+      query: query,
+      model: model,
+      results: v_results,
+      count: v_results.length
+    });
+  } catch (p_error) {
+    p_res.status(500).json({ message: p_error.message });
+  }
+};
+
+// Hybrid search (vector + filtros tradicionales)
+const f_hybridSearch = async (p_req, p_res) => {
+  try {
+    const { query, limit = 10, title, genre, year } = p_req.query;
+    
+    if (!query) {
+      return p_res.status(400).json({ message: 'Query parameter is required' });
+    }
+
+    const v_filters = {};
+    if (title) v_filters.title = title;
+    if (genre) v_filters.genre = genre;
+    if (year) v_filters.year = year;
+
+    const v_results = await vectorSearchService.hybridSearch(query, v_filters, parseInt(limit));
+    p_res.json({
+      query: query,
+      filters: v_filters,
+      results: v_results,
+      count: v_results.length
+    });
+  } catch (p_error) {
+    p_res.status(500).json({ message: p_error.message });
+  }
+};
+
 module.exports = {
   f_getAllEmbeddedMovies,
   f_getEmbeddedMovieById,
   f_createEmbeddedMovie,
   f_updateEmbeddedMovie,
   f_deleteEmbeddedMovie,
-  f_searchEmbeddedMovies
+  f_searchEmbeddedMovies,
+  f_vectorSearch,
+  f_hybridSearch
 };

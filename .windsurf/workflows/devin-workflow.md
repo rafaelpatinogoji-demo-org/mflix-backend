@@ -15,7 +15,7 @@ No crees un script shell para esto. Sino que ocuparás tu terminal para hacer un
 
 Configura la APIKEY en la terminal antes de comenzar a lanzar sesiones
 
-apk_user_ZW1haWx8NjhjMDVlYTQzMWFiNTAwNjk0YTg3Mzg3X29yZy0zMDQ2YjlmMDIxZDc0ZTM4OGMzY2RlMjEwMTdiMzdiNzo0ODE0YjU1MDMzZmU0YTU0YTAwMmYyM2Y3ZTNjYWMyZg==
+apk_user_ZW1haWx8NjhjMDVlYTQzMWFiNTAwNjk0YTg3Mzg3X29yZy0zMDQ2YjlmMDIxZDc0ZTM4OGMzY2RlMjEwMTdiMzdiNzo5MTY5MDVlMjM1MWU0YTY1YTcyZDQzMzMwNWRhMDFjOA==
 
 
 curl -X POST "https://api.devin.ai/v1/sessions" \

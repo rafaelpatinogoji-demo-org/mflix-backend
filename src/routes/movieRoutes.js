@@ -1,16 +1,16 @@
 const express = require('express');
 const {
-  f_getAllMovies,
-  f_getMovieById,
-  f_createMovie,
-  f_updateMovie,
-  f_deleteMovie,
-  f_searchMovies,
-  f_getTopRatedMovies,
-  f_getMoviesByGenre,
-  f_getMoviesByYear,
-  f_getTrendingMovies,
-  f_getMovieEngagementStats
+  f_getAllMovies, // Función para obtener todas las películas
+  f_getMovieById, // Función para obtener una película específica por su ID
+  f_createMovie, // Función para crear una nueva película
+  f_updateMovie, // Función para actualizar los datos de una película existente
+  f_deleteMovie, // Función para eliminar una película del sistema
+  f_searchMovies, // Función para buscar películas según criterios específicos
+  f_getTopRatedMovies, // Función para obtener las películas mejor calificadas
+  f_getMoviesByGenre, // Función para obtener películas filtradas por género
+  f_getMoviesByYear, // Función para obtener películas filtradas por año de lanzamiento
+  f_getTrendingMovies, // Función para obtener las películas en tendencia
+  f_getMovieEngagementStats // Función para obtener estadísticas de engagement de una película
 } = require('../controllers/movieController');
 
 const v_router = express.Router();

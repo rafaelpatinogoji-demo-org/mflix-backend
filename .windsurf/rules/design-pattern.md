@@ -1,5 +1,6 @@
 ---
-trigger: always_on
+trigger: model_decision
+description: Cuando crees nuevos endpoints
 ---
 
 Patrón de Diseño Route-Controller: Implementar separación de responsabilidades donde las Routes definen endpoints HTTP y delegan a Controllers que contienen la lógica de negocio. Este patrón desacopla la configuración de rutas de la implementación de la lógica, permitiendo mayor modularidad y mantenibilidad."

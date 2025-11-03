@@ -4,6 +4,7 @@ const Movie = require('../models/Movie');
 const Theater = require('../models/Theater');
 
 // Create a new movie session
+// Crea una nueva sesión de película validando que la película y el teatro existan
 const f_createMovieSession = async (p_req, p_res) => {
   try {
     const { movieId, theaterId, sessionTime, price, totalSeats } = p_req.body;
@@ -47,6 +48,7 @@ const f_createMovieSession = async (p_req, p_res) => {
 };
 
 // Get all movie sessions
+// Obtiene todas las sesiones de películas con paginación
 const f_getAllMovieSessions = async (p_req, p_res) => {
   try {
     const v_page = parseInt(p_req.query.page) || 1;
@@ -75,6 +77,7 @@ const f_getAllMovieSessions = async (p_req, p_res) => {
 };
 
 // Get a movie session by ID
+// Obtiene una sesión de película específica por su ID
 const f_getMovieSessionById = async (p_req, p_res) => {
   try {
     const v_session = await MovieSession.findById(p_req.params.id)
@@ -94,6 +97,7 @@ const f_getMovieSessionById = async (p_req, p_res) => {
 };
 
 // Update a movie session
+// Actualiza los datos de una sesión de película existente
 const f_updateMovieSession = async (p_req, p_res) => {
   try {
     const v_session = await MovieSession.findByIdAndUpdate(
@@ -119,6 +123,7 @@ const f_updateMovieSession = async (p_req, p_res) => {
 };
 
 // Delete a movie session
+// Elimina una sesión de película del sistema
 const f_deleteMovieSession = async (p_req, p_res) => {
   try {
     const v_session = await MovieSession.findByIdAndDelete(p_req.params.id);
@@ -134,6 +139,7 @@ const f_deleteMovieSession = async (p_req, p_res) => {
 };
 
 // Get sessions by movie
+// Obtiene todas las sesiones de una película específica con filtros de fecha opcionales
 const f_getSessionsByMovie = async (p_req, p_res) => {
   try {
     const v_movieId = p_req.params.movieId;

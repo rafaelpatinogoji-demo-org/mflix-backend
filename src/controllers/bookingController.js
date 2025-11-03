@@ -6,6 +6,8 @@ const MovieSession = require('../models/MovieSession');
 const User = require('../models/User');
 
 // Create a new booking
+// Esta función crea una nueva reserva validando referencias de película, teatro, sesión y usuario,
+// verifica disponibilidad de asientos y usa transacciones para mantener consistencia de datos
 const f_createBooking = async (p_req, p_res) => {
   try {
     const { movieId, theaterId, sessionId, userId, seats, totalPrice } = p_req.body;
@@ -95,6 +97,8 @@ const f_createBooking = async (p_req, p_res) => {
 };
 
 // Get user booking history
+// Esta función obtiene el historial de reservas de un usuario con filtros opcionales
+// por estado, fechas y paginación para mostrar resultados organizados
 const f_getUserBookings = async (p_req, p_res) => {
   try {
     const v_userId = p_req.params.userId;
@@ -146,6 +150,8 @@ const f_getUserBookings = async (p_req, p_res) => {
 };
 
 // Get movie availability across theaters
+// Esta función consulta la disponibilidad de una película específica en todos los teatros,
+// mostrando sesiones disponibles con información de ocupación y asientos libres
 const f_getMovieAvailability = async (p_req, p_res) => {
   try {
     const v_movieId = p_req.params.movieId;
@@ -206,6 +212,8 @@ const f_getMovieAvailability = async (p_req, p_res) => {
 };
 
 // Cancel a booking
+// Esta función cancela una reserva existente, validando que sea cancelable,
+// actualiza el estado y restaura la capacidad de asientos usando transacciones
 const f_cancelBooking = async (p_req, p_res) => {
   try {
     const v_bookingId = p_req.params.id;
@@ -273,6 +281,8 @@ const f_cancelBooking = async (p_req, p_res) => {
 };
 
 // Get booking statistics
+// Esta función genera estadísticas de reservas incluyendo totales, ingresos,
+// estados de reservas y tasas de ocupación por película usando agregaciones
 const f_getBookingStats = async (p_req, p_res) => {
   try {
     const v_movieId = p_req.query.movieId;

@@ -1,5 +1,6 @@
 const Session = require('../models/Session');
 
+// Obtiene todas las sesiones con paginación
 const f_getAllSessions = async (p_req, p_res) => {
   try {
     const v_page = parseInt(p_req.query.page) || 1;
@@ -23,6 +24,7 @@ const f_getAllSessions = async (p_req, p_res) => {
   }
 };
 
+// Obtiene una sesión específica por su ID
 const f_getSessionById = async (p_req, p_res) => {
   try {
     const v_session = await Session.findById(p_req.params.id);
@@ -35,6 +37,7 @@ const f_getSessionById = async (p_req, p_res) => {
   }
 };
 
+// Crea una nueva sesión
 const f_createSession = async (p_req, p_res) => {
   try {
     const v_session = new Session(p_req.body);
@@ -45,6 +48,7 @@ const f_createSession = async (p_req, p_res) => {
   }
 };
 
+// Actualiza una sesión existente por su ID
 const f_updateSession = async (p_req, p_res) => {
   try {
     const v_session = await Session.findByIdAndUpdate(
@@ -61,6 +65,7 @@ const f_updateSession = async (p_req, p_res) => {
   }
 };
 
+// Elimina una sesión por su ID
 const f_deleteSession = async (p_req, p_res) => {
   try {
     const v_session = await Session.findByIdAndDelete(p_req.params.id);
@@ -73,6 +78,7 @@ const f_deleteSession = async (p_req, p_res) => {
   }
 };
 
+// Obtiene las sesiones activas de usuarios con filtros opcionales por usuario y rango de fechas
 const f_getActiveUserSessions = async (p_req, p_res) => {
   try {
     const { userId, startDate, endDate } = p_req.query;
@@ -130,6 +136,7 @@ const f_getActiveUserSessions = async (p_req, p_res) => {
   }
 };
 
+// Cierra todas las sesiones activas de un usuario específico
 const f_logoutAllSessions = async (p_req, p_res) => {
   try {
     const { userId } = p_req.body;

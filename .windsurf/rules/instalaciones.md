@@ -2,4 +2,6 @@
 trigger: always_on
 ---
 
-Siempre pregunta verbalmente al usuario cuando desees instalar alguna cosa desde brew o npm. No lo hagas automáticamente
+Instala automáticamente cuando necesites cosas de NPM y de BREW
+
+Pero debes confirmar con el usuario que esas instalaciones sean requeridas

@@ -1,6 +1,7 @@
 const Comment = require('../models/Comment');
 const mongoose = require('mongoose');
 
+// Obtiene todos los comentarios con paginación y los ordena por fecha descendente
 const f_getAllComments = async (p_req, p_res) => {
   try {
     const v_page = parseInt(p_req.query.page) || 1;
@@ -26,6 +27,7 @@ const f_getAllComments = async (p_req, p_res) => {
   }
 };
 
+// Obtiene un comentario específico por su ID
 const f_getCommentById = async (p_req, p_res) => {
   try {
     const v_comment = await Comment.findById(p_req.params.id)
@@ -39,6 +41,7 @@ const f_getCommentById = async (p_req, p_res) => {
   }
 };
 
+// Crea un nuevo comentario y lo guarda en la base de datos
 const f_createComment = async (p_req, p_res) => {
   try {
     const v_comment = new Comment(p_req.body);
@@ -51,6 +54,7 @@ const f_createComment = async (p_req, p_res) => {
   }
 };
 
+// Actualiza un comentario existente por su ID
 const f_updateComment = async (p_req, p_res) => {
   try {
     const v_comment = await Comment.findByIdAndUpdate(
@@ -68,6 +72,7 @@ const f_updateComment = async (p_req, p_res) => {
   }
 };
 
+// Elimina un comentario por su ID
 const f_deleteComment = async (p_req, p_res) => {
   try {
     const v_comment = await Comment.findByIdAndDelete(p_req.params.id);
@@ -80,6 +85,7 @@ const f_deleteComment = async (p_req, p_res) => {
   }
 };
 
+// Obtiene todos los comentarios de una película específica
 const f_getCommentsByMovie = async (p_req, p_res) => {
   try {
     const v_comments = await Comment.find({ movie_id: p_req.params.movieId })
@@ -92,6 +98,7 @@ const f_getCommentsByMovie = async (p_req, p_res) => {
 };
 
 // Get comment statistics for a specific movie
+// Obtiene estadísticas de comentarios para una película específica con filtros de fecha opcionales
 const f_getCommentStatsByMovie = async (p_req, p_res) => {
   try {
     const v_movieId = p_req.params.movieId;
@@ -149,6 +156,7 @@ const f_getCommentStatsByMovie = async (p_req, p_res) => {
 };
 
 // Get user comment history
+// Obtiene el historial de comentarios de un usuario específico con paginación
 const f_getUserCommentHistory = async (p_req, p_res) => {
   try {
     const v_email = p_req.params.email;
@@ -181,6 +189,7 @@ const f_getUserCommentHistory = async (p_req, p_res) => {
 };
 
 // Get top reviewers
+// Obtiene los usuarios con más comentarios (top reviewers)
 const f_getTopReviewers = async (p_req, p_res) => {
   try {
     const v_limit = parseInt(p_req.query.limit) || 10;
@@ -212,6 +221,7 @@ const f_getTopReviewers = async (p_req, p_res) => {
 };
 
 // Update helpful votes for a comment
+// Actualiza los votos de utilidad (helpful/not helpful) de un comentario
 const f_updateHelpfulVotes = async (p_req, p_res) => {
   try {
     const v_commentId = p_req.params.id;
@@ -245,6 +255,7 @@ const f_updateHelpfulVotes = async (p_req, p_res) => {
 };
 
 // Get recent comments by genre
+// Obtiene comentarios recientes filtrados por género de película
 const f_getRecentCommentsByGenre = async (p_req, p_res) => {
   try {
     const v_genre = p_req.params.genre;
