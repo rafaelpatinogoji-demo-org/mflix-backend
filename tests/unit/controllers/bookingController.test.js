@@ -923,6 +923,7 @@ describe('Booking Controller Tests', () => {
       v_mockReq.query.movieId = 'movie123';
 
       const v_mockObjectId = new mongoose.Types.ObjectId();
+      const v_originalObjectId = mongoose.Types.ObjectId;
       mongoose.Types.ObjectId = jest.fn().mockReturnValue(v_mockObjectId);
 
       Booking.aggregate = jest.fn()
@@ -930,6 +931,8 @@ describe('Booking Controller Tests', () => {
         .mockResolvedValueOnce([]);
 
       await f_getBookingStats(v_mockReq, v_mockRes);
+
+      mongoose.Types.ObjectId = v_originalObjectId;
 
       expect(v_mockRes.json).toHaveBeenCalledWith({
         summary: {
