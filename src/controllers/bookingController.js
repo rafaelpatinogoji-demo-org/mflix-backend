@@ -293,10 +293,10 @@ const f_getBookingStats = async (p_req, p_res) => {
     // Build match filter for aggregation
     const v_matchFilter = {};
     if (v_movieId) {
-      v_matchFilter.movie = mongoose.Types.ObjectId(v_movieId);
+      v_matchFilter.movie = new mongoose.Types.ObjectId(v_movieId);
     }
     if (v_theaterId) {
-      v_matchFilter.theater = mongoose.Types.ObjectId(v_theaterId);
+      v_matchFilter.theater = new mongoose.Types.ObjectId(v_theaterId);
     }
     if (v_startDate || v_endDate) {
       v_matchFilter.bookingDate = {};
