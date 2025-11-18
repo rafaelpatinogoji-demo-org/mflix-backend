@@ -136,3 +136,7 @@ This is the backend API for the Mflix movie database application.
     - `endDate` (optional) - Filter by end date
     - `page` (default: 1) - Page number
     - `limit` (default: 10) - Number of sessions per page
+
+## Verification
+
+This is a test change to verify repository access and PR workflow.
