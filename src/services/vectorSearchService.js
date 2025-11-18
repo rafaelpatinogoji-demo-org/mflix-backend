@@ -1,19 +1,25 @@
-const voyage = require('voyageai');
+const { VoyageAIClient } = require('voyageai');
 const EmbeddedMovie = require('../models/EmbeddedMovie');
 
 class VectorSearchService {
   constructor() {
-    this.voyageClient = new voyage.VoyageAI({
-      apiKey: process.env.VOYAGE_API_KEY
+    const apiKey = process.env.VOYAGE_API_KEY || process.env.VOYAGE_APIKEY;
+    if (!apiKey) {
+      throw new Error('VOYAGE_API_KEY environment variable is not set. Please configure it in your .env file.');
+    }
+    
+    this.voyageClient = new VoyageAIClient({
+      apiKey: apiKey
     });
   }
 
-  async generateEmbedding(text, model = 'voyage-3-large', inputType = 'query') {
+  async generateEmbedding(text, model = 'voyage-3-large', inputType = 'query', outputDimension = 2048) {
     try {
       const embedding = await this.voyageClient.embed({
-        inputs: [text],
+        input: [text],
         model: model,
-        inputType: inputType
+        inputType: inputType,
+        outputDimension: outputDimension
       });
       
       return embedding.data[0].embedding;
