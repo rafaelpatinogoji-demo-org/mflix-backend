@@ -5,7 +5,11 @@
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
-    "dev": "nodemon app.js"
+    "dev": "nodemon app.js",
+    "test": "jest --coverage",
+    "test:watch": "jest --watch",
+    "test:unit": "jest tests/unit",
+    "test:integration": "jest tests/integration"
   },
   "dependencies": {
     "cors": "^2.8.5",
@@ -15,7 +19,11 @@
     "voyageai": "^0.0.8"
   },
   "devDependencies": {
-    "nodemon": "^3.0.1"
+    "@types/jest": "^30.0.0",
+    "jest": "^30.2.0",
+    "mongodb-memory-server": "^10.3.0",
+    "nodemon": "^3.0.1",
+    "supertest": "^7.1.4"
   },
   "keywords": [
     "express",
