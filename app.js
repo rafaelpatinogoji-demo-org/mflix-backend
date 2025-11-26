@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const connectDB = require('./src/config/database');
+const { f_validateJwtConfig } = require('./src/config/auth');
 const movieRoutes = require('./src/routes/movieRoutes');
 const commentRoutes = require('./src/routes/commentRoutes');
 const userRoutes = require('./src/routes/userRoutes');
@@ -16,7 +17,7 @@ const { f_authenticateToken } = require('./src/middleware/authMiddleware');
 const v_app = express();
 const c_PORT = process.env.PORT || 3000;
 
-// Alo
+f_validateJwtConfig();
 connectDB();
 
 v_app.use(cors());

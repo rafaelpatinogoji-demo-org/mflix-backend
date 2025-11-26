@@ -1,16 +1,19 @@
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
 const User = require('../models/User');
 const Session = require('../models/Session');
+const { 
+  c_JWT_SECRET, 
+  c_JWT_ALGORITHM, 
+  c_JWT_EXPIRY_MINUTES,
+  c_JWT_ISSUER,
+  c_JWT_AUDIENCE
+} = require('../config/auth');
 
-const c_JWT_SECRET = process.env.JWT_SECRET || 'mflix_jwt_secret_key';
-const c_JWT_EXPIRY_HOURS = 24;
-
-// Inicia sesión y genera un token JWT
 const f_login = async (p_req, p_res) => {
   try {
     const { email, password } = p_req.body;
 
-    // Validar campos requeridos
     if (!email || !password) {
       return p_res.status(400).json({ 
         message: 'Email and password are required',
@@ -18,8 +21,16 @@ const f_login = async (p_req, p_res) => {
       });
     }
 
-    // Buscar usuario por email
-    const v_user = await User.findOne({ email });
+    if (typeof email !== 'string' || typeof password !== 'string') {
+      return p_res.status(400).json({ 
+        message: 'Invalid input format',
+        code: 'INVALID_INPUT_FORMAT'
+      });
+    }
+
+    const v_sanitizedEmail = email.toLowerCase().trim();
+
+    const v_user = await User.findOne({ email: v_sanitizedEmail });
     if (!v_user) {
       return p_res.status(401).json({ 
         message: 'Invalid credentials',
@@ -27,27 +38,28 @@ const f_login = async (p_req, p_res) => {
       });
     }
 
-    // Verificar contraseña (comparación simple - en producción usar bcrypt)
-    if (v_user.password !== password) {
+    const v_isPasswordValid = await bcrypt.compare(password, v_user.password);
+    if (!v_isPasswordValid) {
       return p_res.status(401).json({ 
         message: 'Invalid credentials',
         code: 'INVALID_CREDENTIALS'
       });
     }
 
-    // Generar token JWT
     const v_tokenPayload = {
       userId: v_user._id.toString(),
       email: v_user.email
     };
 
     const v_token = jwt.sign(v_tokenPayload, c_JWT_SECRET, { 
-      expiresIn: `${c_JWT_EXPIRY_HOURS}h` 
+      algorithm: c_JWT_ALGORITHM,
+      expiresIn: `${c_JWT_EXPIRY_MINUTES}m`,
+      issuer: c_JWT_ISSUER,
+      audience: c_JWT_AUDIENCE
     });
 
-    // Calcular fecha de expiración
     const v_expiryDate = new Date();
-    v_expiryDate.setHours(v_expiryDate.getHours() + c_JWT_EXPIRY_HOURS);
+    v_expiryDate.setMinutes(v_expiryDate.getMinutes() + c_JWT_EXPIRY_MINUTES);
 
     // Guardar sesión en MongoDB
     const v_session = new Session({
@@ -69,7 +81,7 @@ const f_login = async (p_req, p_res) => {
       }
     });
   } catch (p_error) {
-    console.error('Login error:', p_error);
+    console.error('Login error:', p_error.message);
     p_res.status(500).json({ 
       message: 'Internal server error during login',
       code: 'LOGIN_ERROR'
@@ -77,16 +89,23 @@ const f_login = async (p_req, p_res) => {
   }
 };
 
-// Cierra la sesión actual (invalida el token)
 const f_logout = async (p_req, p_res) => {
   try {
     const v_authHeader = p_req.headers['authorization'];
-    const v_token = v_authHeader && v_authHeader.split(' ')[1];
-
-    if (!v_token) {
+    
+    if (!v_authHeader || !v_authHeader.startsWith('Bearer ')) {
       return p_res.status(400).json({ 
-        message: 'Token is required',
+        message: 'Bearer token is required',
         code: 'TOKEN_MISSING'
+      });
+    }
+    
+    const v_token = v_authHeader.substring(7);
+
+    if (!v_token || typeof v_token !== 'string') {
+      return p_res.status(400).json({ 
+        message: 'Invalid token format',
+        code: 'INVALID_TOKEN_FORMAT'
       });
     }
 
@@ -108,7 +127,7 @@ const f_logout = async (p_req, p_res) => {
       message: 'Logout successful'
     });
   } catch (p_error) {
-    console.error('Logout error:', p_error);
+    console.error('Logout error:', p_error.message);
     p_res.status(500).json({ 
       message: 'Internal server error during logout',
       code: 'LOGOUT_ERROR'
@@ -116,23 +135,33 @@ const f_logout = async (p_req, p_res) => {
   }
 };
 
-// Refresca el token JWT (genera uno nuevo y desactiva el anterior)
 const f_refreshToken = async (p_req, p_res) => {
   try {
     const v_authHeader = p_req.headers['authorization'];
-    const v_oldToken = v_authHeader && v_authHeader.split(' ')[1];
-
-    if (!v_oldToken) {
+    
+    if (!v_authHeader || !v_authHeader.startsWith('Bearer ')) {
       return p_res.status(400).json({ 
-        message: 'Token is required',
+        message: 'Bearer token is required',
         code: 'TOKEN_MISSING'
       });
     }
+    
+    const v_oldToken = v_authHeader.substring(7);
 
-    // Verificar el token actual
+    if (!v_oldToken || typeof v_oldToken !== 'string') {
+      return p_res.status(400).json({ 
+        message: 'Invalid token format',
+        code: 'INVALID_TOKEN_FORMAT'
+      });
+    }
+
     let v_decoded;
     try {
-      v_decoded = jwt.verify(v_oldToken, c_JWT_SECRET);
+      v_decoded = jwt.verify(v_oldToken, c_JWT_SECRET, {
+        algorithms: [c_JWT_ALGORITHM],
+        issuer: c_JWT_ISSUER,
+        audience: c_JWT_AUDIENCE
+      });
     } catch (p_jwtError) {
       return p_res.status(401).json({ 
         message: 'Invalid or expired token',
@@ -156,19 +185,20 @@ const f_refreshToken = async (p_req, p_res) => {
     // Desactivar la sesión anterior
     await Session.findByIdAndUpdate(v_oldSession._id, { status: 'inactive' });
 
-    // Generar nuevo token
     const v_tokenPayload = {
       userId: v_decoded.userId,
       email: v_decoded.email
     };
 
     const v_newToken = jwt.sign(v_tokenPayload, c_JWT_SECRET, { 
-      expiresIn: `${c_JWT_EXPIRY_HOURS}h` 
+      algorithm: c_JWT_ALGORITHM,
+      expiresIn: `${c_JWT_EXPIRY_MINUTES}m`,
+      issuer: c_JWT_ISSUER,
+      audience: c_JWT_AUDIENCE
     });
 
-    // Calcular nueva fecha de expiración
     const v_expiryDate = new Date();
-    v_expiryDate.setHours(v_expiryDate.getHours() + c_JWT_EXPIRY_HOURS);
+    v_expiryDate.setMinutes(v_expiryDate.getMinutes() + c_JWT_EXPIRY_MINUTES);
 
     // Crear nueva sesión
     const v_newSession = new Session({
@@ -185,7 +215,7 @@ const f_refreshToken = async (p_req, p_res) => {
       expiresAt: v_expiryDate
     });
   } catch (p_error) {
-    console.error('Token refresh error:', p_error);
+    console.error('Token refresh error:', p_error.message);
     p_res.status(500).json({ 
       message: 'Internal server error during token refresh',
       code: 'REFRESH_ERROR'
@@ -193,8 +223,14 @@ const f_refreshToken = async (p_req, p_res) => {
   }
 };
 
+const f_hashPassword = async (p_plainPassword) => {
+  const c_SALT_ROUNDS = 12;
+  return await bcrypt.hash(p_plainPassword, c_SALT_ROUNDS);
+};
+
 module.exports = {
   f_login,
   f_logout,
-  f_refreshToken
+  f_refreshToken,
+  f_hashPassword
 };

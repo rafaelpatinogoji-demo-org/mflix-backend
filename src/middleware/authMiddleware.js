@@ -1,25 +1,39 @@
 const jwt = require('jsonwebtoken');
 const Session = require('../models/Session');
+const { 
+  c_JWT_SECRET, 
+  c_JWT_ALGORITHM,
+  c_JWT_ISSUER,
+  c_JWT_AUDIENCE
+} = require('../config/auth');
 
-const c_JWT_SECRET = process.env.JWT_SECRET || 'mflix_jwt_secret_key';
-
-// Middleware para verificar el token JWT y validar la sesión
 const f_authenticateToken = async (p_req, p_res, p_next) => {
   try {
     const v_authHeader = p_req.headers['authorization'];
-    const v_token = v_authHeader && v_authHeader.split(' ')[1];
-
-    if (!v_token) {
+    
+    if (!v_authHeader || !v_authHeader.startsWith('Bearer ')) {
       return p_res.status(401).json({ 
-        message: 'Access token is required',
+        message: 'Bearer token is required',
         code: 'TOKEN_MISSING'
       });
     }
+    
+    const v_token = v_authHeader.substring(7);
 
-    // Verificar el token JWT
+    if (!v_token || typeof v_token !== 'string') {
+      return p_res.status(401).json({ 
+        message: 'Invalid token format',
+        code: 'INVALID_TOKEN_FORMAT'
+      });
+    }
+
     let v_decoded;
     try {
-      v_decoded = jwt.verify(v_token, c_JWT_SECRET);
+      v_decoded = jwt.verify(v_token, c_JWT_SECRET, {
+        algorithms: [c_JWT_ALGORITHM],
+        issuer: c_JWT_ISSUER,
+        audience: c_JWT_AUDIENCE
+      });
     } catch (p_jwtError) {
       if (p_jwtError.name === 'TokenExpiredError') {
         return p_res.status(401).json({ 
@@ -66,7 +80,7 @@ const f_authenticateToken = async (p_req, p_res, p_next) => {
 
     p_next();
   } catch (p_error) {
-    console.error('Authentication error:', p_error);
+    console.error('Authentication error:', p_error.message);
     p_res.status(500).json({ 
       message: 'Internal server error during authentication',
       code: 'AUTH_ERROR'
