@@ -10,6 +10,8 @@ const theaterSessionRoutes = require('./src/routes/theaterSessionRoutes');
 const embeddedMovieRoutes = require('./src/routes/embeddedMovieRoutes');
 const bookingRoutes = require('./src/routes/bookingRoutes');
 const movieSessionRoutes = require('./src/routes/movieSessionRoutes');
+const authRoutes = require('./src/routes/authRoutes');
+const { f_authenticateToken } = require('./src/middleware/authMiddleware');
 
 const v_app = express();
 const c_PORT = process.env.PORT || 3000;
@@ -21,21 +23,26 @@ v_app.use(cors());
 v_app.use(express.json());
 v_app.use(express.urlencoded({ extended: true }));
 
-v_app.use('/api/movies', movieRoutes);
-v_app.use('/api/comments', commentRoutes);
-v_app.use('/api/users', userRoutes);
-v_app.use('/api/theaters', theaterRoutes);
-v_app.use('/api/sessions', sessionRoutes);
-v_app.use('/api/theater-sessions', theaterSessionRoutes);
-v_app.use('/api/embedded-movies', embeddedMovieRoutes);
-v_app.use('/api/bookings', bookingRoutes);
-v_app.use('/api/movie-sessions', movieSessionRoutes);
+// Rutas públicas (sin autenticación)
+v_app.use('/api/auth', authRoutes);
+
+// Rutas protegidas (requieren autenticación JWT)
+v_app.use('/api/movies', f_authenticateToken, movieRoutes);
+v_app.use('/api/comments', f_authenticateToken, commentRoutes);
+v_app.use('/api/users', f_authenticateToken, userRoutes);
+v_app.use('/api/theaters', f_authenticateToken, theaterRoutes);
+v_app.use('/api/sessions', f_authenticateToken, sessionRoutes);
+v_app.use('/api/theater-sessions', f_authenticateToken, theaterSessionRoutes);
+v_app.use('/api/embedded-movies', f_authenticateToken, embeddedMovieRoutes);
+v_app.use('/api/bookings', f_authenticateToken, bookingRoutes);
+v_app.use('/api/movie-sessions', f_authenticateToken, movieSessionRoutes);
 
 v_app.get('/', (p_req, p_res) => {
   p_res.json({
     message: 'MFlix API Server',
     version: '1.0.0',
     endpoints: {
+      auth: '/api/auth',
       movies: '/api/movies',
       comments: '/api/comments',
       users: '/api/users',
